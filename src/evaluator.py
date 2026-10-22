@@ -69,11 +69,22 @@ def resolve_gemini_api_key(explicit_key: Optional[str] = None) -> Tuple[Optional
     """
     Resolves API key / credentials in order:
     1. Explicit key argument passed to function
-    2. GEMINI_API_KEY environment variable (e.g. from .env file or OS environment)
-    3. GOOGLE_API_KEY environment variable
+    2. Streamlit Cloud Secrets (st.secrets["GEMINI_API_KEY"])
+    3. GEMINI_API_KEY environment variable (e.g. from .env file or OS environment)
+    4. GOOGLE_API_KEY environment variable
     """
     if explicit_key and explicit_key.strip():
         return explicit_key.strip(), "explicit_arg"
+
+    try:
+        import streamlit as st
+        if hasattr(st, "secrets"):
+            if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
+                return str(st.secrets["GEMINI_API_KEY"]).strip(), "streamlit_secrets"
+            if "GOOGLE_API_KEY" in st.secrets and st.secrets["GOOGLE_API_KEY"]:
+                return str(st.secrets["GOOGLE_API_KEY"]).strip(), "streamlit_secrets"
+    except Exception:
+        pass
 
     env_gemini = os.environ.get("GEMINI_API_KEY")
     if env_gemini and env_gemini.strip():
