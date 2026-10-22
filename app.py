@@ -223,14 +223,26 @@ st.sidebar.markdown("---")
 
 # 1. API Key & Credentials Status
 st.sidebar.subheader("🔑 Credentials & API Status")
-custom_key = st.sidebar.text_input("Gemini API Key Override (Optional)", type="password", help="Leave blank to use environment key or gcloud ADC.")
+
+# Check if a system/server key is pre-configured
+system_key, system_source = resolve_gemini_api_key(None)
+
+if system_key:
+    st.sidebar.success(f"🟢 **System API Key Active** ({system_source})")
+    custom_key = st.sidebar.text_input(
+        "Personal API Key Override (Optional)",
+        type="password",
+        help="System key is active. Leave blank to use pre-configured server secret, or enter a custom key to override."
+    )
+else:
+    st.sidebar.warning("🟡 **No System API Key Configured**")
+    custom_key = st.sidebar.text_input(
+        "Gemini API Key (Required for AI Evaluation)",
+        type="password",
+        help="Provide a Gemini API key to enable Multimodal AI evaluation, or switch model to 'Heuristic Rules Engine'."
+    )
 
 resolved_key, key_source = resolve_gemini_api_key(custom_key if custom_key else None)
-
-if resolved_key:
-    st.sidebar.success(f"🟢 **API Key Active** ({key_source})")
-else:
-    st.sidebar.warning("🟡 **API Key Missing**: Operating in Heuristic Analysis Mode.")
 
 model_choice = st.sidebar.selectbox(
     "Target Evaluation Model",
