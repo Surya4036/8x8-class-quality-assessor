@@ -1,6 +1,6 @@
 # 8x8 Class Quality Assessment System
 
-An AI-powered assessment platform built for **8x8** online live classes for children. The system automatically evaluates class recordings (`.vtt` transcripts and `.mp4` video files) across 5 core pedagogical and environmental pillars, assigns a ground-truth-aligned quality grade (`Poor / Quality Issue`, `Weak`, `Average`, `Good`, `Excellent`), and provides timestamped, evidence-backed observations.
+An AI-powered quality assessment platform built for **8x8** online live classes for children. The system automatically evaluates class recordings (`.vtt` transcripts and `.mp4` video files) across 5 core pedagogical and environmental pillars, assigns a ground-truth-aligned quality grade (`Poor / Quality Issue`, `Weak`, `Average`, `Good`, `Excellent`), and provides timestamped, evidence-backed observations.
 
 ---
 
@@ -77,14 +77,15 @@ The system uses a **Dual-Pass Hybrid Multimodal Architecture** engineered for hi
 
 ### Prerequisites
 - Python 3.10+
-- Google Gemini API Key or Google Cloud CLI (`gcloud`)
+- Google Gemini API Key or Google Cloud API Key
 
-### Step 1: Clone & Install Dependencies
+### Step 1: Clone Repository & Install Dependencies
 ```bash
-# Navigate to project directory
-cd "D:\Humaniti AI Assessment"
+# Clone the repository
+git clone https://github.com/Surya4036/8x8-class-quality-assessor.git
+cd 8x8-class-quality-assessor
 
-# Install locked dependencies
+# Install dependencies
 pip install -r requirements.txt
 ```
 
@@ -93,48 +94,41 @@ pip install -r requirements.txt
 The system loads credentials directly from a `.env` file or environment variables:
 
 1. **`.env` File (Recommended):**
-   Create a `.env` file in the project root:
+   Create a `.env` file in the project root directory:
    ```env
    GEMINI_API_KEY="your-gemini-api-key-here"
    ```
 
 2. **Environment Variables (`GEMINI_API_KEY` / `GOOGLE_API_KEY`):**
-   ```powershell
-   # Windows PowerShell
-   $env:GEMINI_API_KEY="your-gemini-api-key-here"
-   ```
-   export GEMINI_API_KEY="AIzaSy..."
-   ```
-2. **`GOOGLE_API_KEY`** (Secondary environment variable):
-   ```bash
-   $env:GOOGLE_API_KEY="AIzaSy..."
-   ```
-3. **GCP Application Default Credentials (`gcloud` ADC Fallback)**:
-   If no environment API keys are found, the system automatically retrieves access tokens or creates API keys via `gcloud`:
-   ```bash
-   gcloud auth application-default login
-   ```
+   - **PowerShell (Windows):**
+     ```powershell
+     $env:GEMINI_API_KEY="your-gemini-api-key-here"
+     ```
+   - **Bash (Linux/macOS):**
+     ```bash
+     export GEMINI_API_KEY="your-gemini-api-key-here"
+     ```
 
 ---
 
 ## Running the Application
 
-Launch the Streamlit interactive dashboard:
+Launch the Streamlit interactive web dashboard:
 
 ```bash
 streamlit run app.py
 ```
 
 The dashboard allows you to:
-- Select from 10 pre-loaded benchmark recordings across all 5 quality tiers (`excellent`, `good`, `average`, `weak`, `quality issue`).
 - Upload custom `.vtt` transcript files or `.mp4` video recordings.
-- View real-time evaluation scorecards, radar charts, 5-pillar breakdown, timestamped observations, and improvement recommendations.
+- Select sample class recordings for 1-click testing.
+- View real-time evaluation scorecards, 5-pillar progress metrics, applied capping alerts, timestamped observations, keyframes gallery, and coaching recommendations.
 
 ---
 
-## Benchmark Verification Suite
+## Benchmark Verification & Testing
 
-To run the automated verification suite testing 10/10 ground-truth benchmark recordings:
+To run the automated verification suite testing ground-truth benchmark recordings:
 
 ```bash
 python test_benchmark.py
@@ -169,24 +163,23 @@ python -m unittest discover -s src
 
 ---
 
-## Project Structure
+## Repository Structure
 
 ```
-.
+8x8-class-quality-assessor/
 ├── app.py                      # Interactive Streamlit dashboard UI
 ├── requirements.txt            # Dependency file with explicit versions
 ├── test_benchmark.py           # Ground-truth 10-class benchmark verification test runner
 ├── EXPLANATION.md              # 300-word submission summary
-├── PRD.md                      # Product Requirements Document
-├── agent.md                    # Agent Master Blueprint
+├── README.md                   # System documentation & setup guide
+├── .gitignore                  # Git exclusion rules
 ├── ai_interaction_logs/        # Prompt history & research decisions
 │   └── prompt_history.md
-├── src/                        # Core application modules
-│   ├── vtt_parser.py           # WebVTT parser & keyword extractor
-│   ├── video_analyzer.py       # OpenCV keyframe extraction module
-│   ├── evaluator.py            # Gemini 1.5 Flash evaluator & hard capping engine
-│   ├── test_vtt_parser.py      # Unit tests for VTT parser
-│   ├── test_video_analyzer.py  # Unit tests for video analyzer
-│   └── test_evaluator.py       # Unit tests for evaluator
-└── class recordings/           # Ground truth dataset partitioned by quality tier
+└── src/                        # Core application modules
+    ├── vtt_parser.py           # WebVTT parser & keyword extractor
+    ├── video_analyzer.py       # OpenCV keyframe extraction module
+    ├── evaluator.py            # Gemini 1.5 Flash evaluator & hard capping engine
+    ├── test_vtt_parser.py      # Unit tests for VTT parser
+    ├── test_video_analyzer.py  # Unit tests for video analyzer
+    └── test_evaluator.py       # Unit tests for evaluator
 ```
