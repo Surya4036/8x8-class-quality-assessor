@@ -25,3 +25,6 @@ Mail Details.txt
 .wayfinder/
 scratch/
 .system_generated/
+
+# Ignore AI logs text file
+ai_interaction_logs/Logs.txt
