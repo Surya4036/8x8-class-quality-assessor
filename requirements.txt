@@ -1,0 +1,10 @@
+# Core Dependencies for 8x8 Class Quality Assessment System
+streamlit==1.65.0
+google-genai==2.19.0
+opencv-python==5.0.0.93
+pillow==12.3.0
+pandas==3.0.6
+pydantic==2.12.5
+
+# Testing & Development
+pytest==9.0.3

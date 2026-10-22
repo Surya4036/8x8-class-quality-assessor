@@ -1,0 +1,27 @@
+# Environment & Credentials
+.env
+*.env
+*.key
+
+# Python Bytecode & Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Confidential Dataset & Recordings (Ground Rule Compliance)
+class recordings/
+class_recordings/
+*.mp4
+*.vtt
+*.pdf
+
+# Internal Challenge Briefs & Agent Planning Files
+agent.md
+PRD.md
+Humaniti_AI_24_Hour_Build_Challenge.md
+Mail Details.txt
+.wayfinder/
+scratch/
+.system_generated/
