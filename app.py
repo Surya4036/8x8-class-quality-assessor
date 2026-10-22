@@ -161,50 +161,6 @@ st.markdown("""
 
 
 # --- Helper Functions ---
-@st.cache_data
-def discover_sample_recordings(base_dir: str) -> Dict[str, Dict[str, str]]:
-    """
-    Scans class recordings directory and groups paired .vtt and .mp4 files by label.
-    """
-    recordings_dir = os.path.join(base_dir, "class recordings")
-    samples = {}
-    if not os.path.exists(recordings_dir):
-        return samples
-
-    for root, dirs, files in os.walk(recordings_dir):
-        rel_folder = os.path.relpath(root, recordings_dir)
-        if rel_folder == ".":
-            continue
-        
-        vtt_files = [f for f in files if f.endswith('.vtt')]
-        mp4_files = [f for f in files if f.endswith('.mp4')]
-
-        if vtt_files:
-            folder_label = rel_folder.replace('\\', ' / ').replace('/', ' / ').title()
-            for vtt_file in vtt_files:
-                sample_id = f"[{folder_label}] {vtt_file.replace('-transcript-1.1.vtt', '').replace('.vtt', '')}"
-                vtt_path = os.path.join(root, vtt_file)
-                
-                # Match corresponding MP4 file if available
-                mp4_path = None
-                if mp4_files:
-                    # Find best matching mp4 or take first in folder
-                    prefix = vtt_file.split('-')[0].split('.')[0].strip()
-                    matching = [m for m in mp4_files if prefix.lower() in m.lower()]
-                    if matching:
-                        mp4_path = os.path.join(root, matching[0])
-                    else:
-                        mp4_path = os.path.join(root, mp4_files[0])
-
-                samples[sample_id] = {
-                    "label": folder_label,
-                    "vtt_path": vtt_path,
-                    "mp4_path": mp4_path
-                }
-
-    return samples
-
-
 def get_grade_badge_info(grade: str) -> Tuple[str, str, str]:
     """Returns CSS class, icon, and display string for a grade."""
     m = {
@@ -253,36 +209,10 @@ model_choice = st.sidebar.selectbox(
 
 st.sidebar.markdown("---")
 
-# 2. Input Mode Selection
-st.sidebar.subheader("📂 Input Session Data")
-input_mode = st.sidebar.radio(
-    "Select Input Source",
-    ["Upload Files (.vtt / .mp4)", "Load Sample Benchmark Session"],
-    index=1
-)
-
-uploaded_vtt = None
-uploaded_mp4 = None
-selected_sample = None
-sample_data = None
-
-sample_dict = discover_sample_recordings(BASE_DIR)
-
-if input_mode == "Upload Files (.vtt / .mp4)":
-    uploaded_vtt = st.sidebar.file_uploader("Upload Class Transcript (.vtt)", type=["vtt"])
-    uploaded_mp4 = st.sidebar.file_uploader("Upload Video Recording (.mp4)", type=["mp4"])
-else:
-    if sample_dict:
-        sample_options = list(sample_dict.keys())
-        selected_sample_key = st.sidebar.selectbox("Select Benchmark Sample", sample_options)
-        sample_data = sample_dict.get(selected_sample_key)
-        if sample_data:
-            st.sidebar.info(
-                f"**VTT:** `{os.path.basename(sample_data['vtt_path'])}`\n\n"
-                f"**MP4:** `{os.path.basename(sample_data['mp4_path']) if sample_data['mp4_path'] else 'None'}`"
-            )
-    else:
-        st.sidebar.warning("No sample files found in `class recordings/` directory.")
+# 2. Input Session Data
+st.sidebar.subheader("📂 Upload Session Data")
+uploaded_vtt = st.sidebar.file_uploader("Upload Class Transcript (.vtt)", type=["vtt"], help="Select WebVTT transcript file.")
+uploaded_mp4 = st.sidebar.file_uploader("Upload Video Recording (.mp4)", type=["mp4"], help="Optional MP4 video recording for keyframe vision analysis.")
 
 run_analysis = st.sidebar.button("🚀 Run Class Assessment", type="primary", use_container_width=True)
 
@@ -302,39 +232,25 @@ if run_analysis or "last_result" in st.session_state:
         
         with st.spinner("Processing class session inputs..."):
             # 1. Process VTT Transcript
-            vtt_content = None
-            vtt_path_to_use = None
-            vtt_filename = "transcript.vtt"
-
-            if input_mode == "Upload Files (.vtt / .mp4)" and uploaded_vtt is not None:
+            if uploaded_vtt is not None:
                 vtt_content = uploaded_vtt.getvalue().decode("utf-8", errors="ignore")
                 vtt_filename = uploaded_vtt.name
                 parser = VTTParser(vtt_content, is_content=True, file_name=vtt_filename)
                 vtt_analysis = parser.parse()
-            elif input_mode == "Load Sample Benchmark Session" and sample_data:
-                vtt_path_to_use = sample_data["vtt_path"]
-                parser = VTTParser(vtt_path_to_use)
-                vtt_analysis = parser.parse()
             
             if not vtt_analysis:
-                st.error("❌ Please upload a valid `.vtt` transcript or select a sample recording to analyze.")
+                st.error("❌ Please upload a valid `.vtt` class transcript file in the sidebar to analyze.")
                 st.stop()
 
             # 2. Process MP4 Video (if provided)
             video_path_to_use = None
-            temp_mp4_file = None
-
-            if input_mode == "Upload Files (.vtt / .mp4)" and uploaded_mp4 is not None:
-                # Write uploaded mp4 to temp file for OpenCV processing
+            if uploaded_mp4 is not None:
                 temp_dir = os.path.join(BASE_DIR, "scratch")
                 os.makedirs(temp_dir, exist_ok=True)
                 temp_mp4 = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4", dir=temp_dir)
                 temp_mp4.write(uploaded_mp4.getvalue())
                 temp_mp4.close()
                 video_path_to_use = temp_mp4.name
-                temp_mp4_file = temp_mp4.name
-            elif input_mode == "Load Sample Benchmark Session" and sample_data and sample_data["mp4_path"]:
-                video_path_to_use = sample_data["mp4_path"]
 
             if video_path_to_use and os.path.exists(video_path_to_use):
                 video_analyzer = VideoAnalyzer(video_path_to_use)
@@ -528,7 +444,7 @@ if run_analysis or "last_result" in st.session_state:
 
 else:
     # Initial Landing Screen
-    st.info("👈 **Get Started**: Select a sample benchmark class from the sidebar or upload `.vtt` / `.mp4` files, then click **Run Class Assessment**.")
+    st.info("👈 **Get Started**: Upload a `.vtt` class transcript and optional `.mp4` video recording in the sidebar, then click **Run Class Assessment**.")
     
     st.markdown("""
     ### System Features & Capability Overview
