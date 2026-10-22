@@ -91,15 +91,18 @@ pip install -r requirements.txt
 
 ### Step 2: Credential Configuration
 
-The system loads credentials directly from a `.env` file or environment variables:
+The system supports 3 flexible credential options:
 
-1. **`.env` File (Recommended):**
-   Create a `.env` file in the project root directory:
+1. **Streamlit Cloud Secrets / `.env` File (Recommended):**
+   Create a `.env` file in the project root directory (or set in Streamlit Cloud Secrets):
    ```env
    GEMINI_API_KEY="your-gemini-api-key-here"
    ```
 
-2. **Environment Variables (`GEMINI_API_KEY` / `GOOGLE_API_KEY`):**
+2. **UI Sidebar Key Input:**
+   Enter your Gemini API key directly into the **Credentials & API Status** section in the Streamlit web sidebar.
+
+3. **Environment Variables (`GEMINI_API_KEY` / `GOOGLE_API_KEY`):**
    - **PowerShell (Windows):**
      ```powershell
      $env:GEMINI_API_KEY="your-gemini-api-key-here"
@@ -120,9 +123,9 @@ streamlit run app.py
 ```
 
 The dashboard allows you to:
-- Upload custom `.vtt` transcript files or `.mp4` video recordings.
-- Select sample class recordings for 1-click testing.
-- View real-time evaluation scorecards, 5-pillar progress metrics, applied capping alerts, timestamped observations, keyframes gallery, and coaching recommendations.
+- Upload custom `.vtt` transcript files and optional `.mp4` video recordings in the sidebar.
+- Dynamically view credential status and switch between Gemini 1.5 models or the keyless Heuristic Rules Engine.
+- View real-time evaluation scorecards, 5-pillar progress metrics, applied capping alerts, timestamped evidence, keyframes gallery, and full clean transcript details.
 
 ---
 
