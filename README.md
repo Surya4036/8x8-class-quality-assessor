@@ -129,40 +129,13 @@ The dashboard allows you to:
 
 ---
 
-## Benchmark Verification & Testing
+## Testing
 
-To run the automated verification suite testing ground-truth benchmark recordings:
-
-```bash
-python test_benchmark.py
-```
-
-Expected Output:
-```text
-=========================================================================================================
- 8x8 CLASS QUALITY ASSESSMENT SYSTEM - GROUND-TRUTH BENCHMARK TEST SUITE
-=========================================================================================================
-BATCH    | FOLDER          | EXPECTED (QA)        | PREDICTED            | MATCH  | STATUS    
----------------------------------------------------------------------------------------------------------
-B472     | excellent       | Excellent            | Excellent            | True   | PASS      
-B491     | excellent       | Excellent            | Excellent            | True   | PASS      
-B435     | good            | Good                 | Good                 | True   | PASS      
-B552     | good            | Good                 | Good                 | True   | PASS      
-B435     | average         | Average              | Average              | True   | PASS      
-B516     | average         | Average              | Average              | True   | PASS      
-B482     | weak            | Weak                 | Weak                 | True   | PASS      
-B558     | weak            | Weak                 | Weak                 | True   | PASS      
-B392     | quality issue   | Poor / Quality Issue | Poor / Quality Issue | True   | PASS      
-B441     | quality issue   | Poor / Quality Issue | Poor / Quality Issue | True   | PASS      
----------------------------------------------------------------------------------------------------------
-BENCHMARK ACCURACY SUMMARY: 10/10 Matches (100.0%)
-=========================================================================================================
-```
-
-To run individual unit tests:
+To run individual unit tests for the core modules:
 ```bash
 python -m unittest discover -s src
 ```
+*(Note: The full automated verification suite `test_benchmark.py` requires the proprietary 8x8 class recordings dataset, which is omitted from this public repository for privacy reasons.)*
 
 ---
 
@@ -172,7 +145,7 @@ python -m unittest discover -s src
 8x8-class-quality-assessor/
 ├── app.py                      # Interactive Streamlit dashboard UI
 ├── requirements.txt            # Dependency file with explicit versions
-├── test_benchmark.py           # Ground-truth 10-class benchmark verification test runner
+├── test_benchmark.py           # Benchmark verification runner (requires private dataset)
 ├── EXPLANATION.md              # 300-word submission summary
 ├── README.md                   # System documentation & setup guide
 ├── .gitignore                  # Git exclusion rules
